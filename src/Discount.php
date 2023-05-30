@@ -9,13 +9,19 @@ use Immera\EcomDiscount\Service\Contracts\DiscountableOrder;
 use Immera\EcomDiscount\Service\Contracts\DiscounteeUser;
 use Immera\EcomDiscount\Service\Models\DiscountCoupon;
 use Immera\EcomDiscount\Service\Models\DiscountCouponUsage;
+use Immera\EcomDiscount\Service\Validations\AmountValidation;
+use Immera\EcomDiscount\Service\Validations\IsActiveValidation;
+use Immera\EcomDiscount\Service\Validations\QuantityValidation;
 
 class Discount {
 
     public function check(string $code, DiscountableCart $cart, DiscounteeUser $user): bool
     {
         $validations = [
-            UsageValidation::class,            
+            IsActiveValidation::class,
+            QuantityValidation::class,
+            AmountValidation::class,
+            UsageValidation::class,
         ];
 
         $coupon = DiscountCoupon::where('code', $code)->first();
@@ -39,8 +45,8 @@ class Discount {
         $discount = DiscountCoupon::where('code', $code)->first();
         $order_total = $order->getAmount();
         DiscountCouponUsage::create([
-            "discountee_id" => $user->id,
-            "discountable_id" => $order->id,
+            "discountee_id" => $user->getId(),
+            "discountable_id" => $order->getId(),
             "discount_id" => $discount->id,
             "order_total" => $order_total,
             "discount_avail" => $discount->calc($order_total),
