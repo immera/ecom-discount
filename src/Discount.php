@@ -15,7 +15,7 @@ use Immera\EcomDiscount\Service\Validations\QuantityValidation;
 
 class Discount {
 
-    public function check(string $code, DiscountableCart $cart, DiscounteeUser $user): bool
+    public function check(string $code, DiscountableCart $cart, DiscounteeUser $user): ?float
     {
         $validations = [
             IsActiveValidation::class,
@@ -24,15 +24,17 @@ class Discount {
             UsageValidation::class,
         ];
 
-        $coupon = DiscountCoupon::where('code', $code)->first();
-        if (empty($coupon)) {
+        $discount = DiscountCoupon::where('code', $code)->first();
+        if (empty($discount)) {
             Log::info('Discount Coupon not available for '. $code);
             return false;
         }
 
-        return collect($validations)->reduce(function($result, $cls) use ($coupon, $cart, $user) {
-            return $result && (new $cls($coupon, $cart, $user))->validate();
+        $valid = collect($validations)->reduce(function($result, $cls) use ($discount, $cart, $user) {
+            return $result && (new $cls($discount, $cart, $user))->validate();
         }, true);
+
+        return $valid ? $discount->calc($cart->getAmount()): NULL;
     }
 
     public function consume(string $code, DiscountableOrder $order, DiscounteeUser $user): bool
