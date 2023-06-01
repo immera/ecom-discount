@@ -51,7 +51,8 @@ class Discount {
             "order_total" => $order_total,
             "discount_avail" => $discount->calc($order_total),
         ]);
-
+        // Notify order that we used this token with this order, so app can maintain this from their end.
+        $order->useDiscount($discount);
         return true;
     }
 
