@@ -27,7 +27,7 @@ class Discount {
         $discount = DiscountCoupon::where('code', $code)->first();
         if (empty($discount)) {
             Log::info('Discount Coupon not available for '. $code);
-            return false;
+            return NULL;
         }
 
         $valid = collect($validations)->reduce(function($result, $cls) use ($discount, $cart, $user) {
