@@ -7,16 +7,20 @@ use Immera\EcomDiscount\Service\Enums\DiscountType;
 class DiscountCoupon extends Model
 {
 
-    protected $casts = [
-        'discount_type' => DiscountType::class
-    ];
-
     public function calc(int $total): float
     {
-        return match($this->discount_type) {
-            DiscountType::PERCENT => floatval($total*$this->discount_value/100),
-            DiscountType::AMOUNT => min($this->discount_value, $total),
-            default => 0,
+        switch ($this->discount_type) {
+            case DiscountType::PERCENT:
+                return floatval($total*$this->discount_value/100);
+                break;
+
+            case DiscountType::AMOUNT:
+                return min($this->discount_value, $total);
+                break;
+                
+            default:
+                return 0;
+                break;
         };
     }
 
