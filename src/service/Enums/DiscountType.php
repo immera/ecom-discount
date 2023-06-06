@@ -2,8 +2,8 @@
 
 namespace Immera\EcomDiscount\Service\Enums;
 
-enum DiscountType: int
+class DiscountType
 {
-    case PERCENT = 1;
-    case AMOUNT = 2;
+    const PERCENT = 1;
+    const AMOUNT = 2;
 }
