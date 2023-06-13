@@ -14,7 +14,9 @@ class UsageValidation extends BaseValidation
         if ($usage <= 0) {
             return false;
         }
-        $count = DiscountCouponUsage::where('discountee_id', $this->user->getId())->count();
+        $count = DiscountCouponUsage::where('discountee_id', $this->user->getId())
+            ->where('discount_id', $this->discount->id)
+            ->count();
         return ($count < $usage);
     }
 }
